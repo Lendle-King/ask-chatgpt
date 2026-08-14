@@ -1,0 +1,8 @@
+name: chatgpt-web
+version: 1.0.0
+description: "Ask questions to the ChatGPT web UI (chatgpt.com) via the local CDP browser. Default model GPT-5.6 Sol with max thinking effort (High); optional web search. Shares the logged-in Chrome started by ~/.hermes/scripts/start_proxy_chrome.sh. Core driver: ~/.hermes/scripts/chatgpt_web_cli.py (also callable directly by Pi / any shell)."
+author: chatgpt-web-bridge
+kind: backend
+provides_tools:
+  - chatgpt_ask
+  - chatgpt_web_status

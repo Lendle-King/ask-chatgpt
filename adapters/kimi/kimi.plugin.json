@@ -1,0 +1,12 @@
+{
+  "name": "ask-chatgpt",
+  "version": "1.0.0",
+  "description": "Ask ChatGPT Web (GPT-5.6 Sol, High effort, optional web search) hard questions via the local chatgpt-web CLI and get answers back.",
+  "skills": "./skills/",
+  "systemPromptPath": "./SYSTEM.md",
+  "commands": "./commands/",
+  "interface": {
+    "displayName": "Ask ChatGPT",
+    "shortDescription": "向 ChatGPT Web（GPT-5.6 Sol/High，可选联网搜索）提问并取回答案"
+  }
+}
