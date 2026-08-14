@@ -61,7 +61,7 @@ Clash/V2Ray/Sing-box local ports, or a corporate proxy.
 
 ```bash
 # 1. Get the code
-git clone https://github.com/Lendle-King/chatgpt-web-bridge.git && cd chatgpt-web-bridge
+git clone https://github.com/Lendle-King/ask-chatgpt.git && cd ask-chatgpt
 
 # 2. Install (playwright python pkg + Chrome detection + files into ~/.hermes/)
 #    Point PROXY_URL at YOUR outbound proxy first if 17891 is not yours:
