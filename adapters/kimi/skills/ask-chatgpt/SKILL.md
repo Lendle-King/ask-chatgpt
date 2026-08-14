@@ -45,3 +45,4 @@ python3 "$HOME/.hermes/scripts/chatgpt_web_cli.py" status
 - 共享单标签页：同一时间只允许一个调用运行，禁止并发，也不要与其他 agent 的调用叠加。
 - 单次回答约 15–90 秒（带搜索/长思考更久），脚本本身可能运行数分钟——给 Bash 调用设置足够的外层超时。
 - 失败（success=false / 退出码 1）：不要在没有新证据时盲目重试；先 `status` 检查，再决定重试或报告用户。不要因此阻塞当前任务。
+- 首次调用失败或未配置完成（连不上 Chrome / logged_in=false）：提醒用户查看项目 README（https://github.com/Lendle-King/ask-chatgpt#readme）——含 GUI 直接登录与无 GUI cookie 导入两种路径。

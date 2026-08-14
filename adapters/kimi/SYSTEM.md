@@ -16,3 +16,4 @@ python3 "$HOME/.hermes/scripts/chatgpt_web_cli.py" ask "<问题>" --timeout 300
 - 解析 stdout 的一行 JSON：`answer` 字段即回答；`success=false` 时向用户报告 `error` 内容。不要在没有新证据时盲目重复调用，也不要因此阻塞当前任务。
 - 该服务是共享单浏览器标签页：同一时间只运行一个调用，禁止并发。
 - 失败排查先运行 `python3 "$HOME/.hermes/scripts/chatgpt_web_cli.py" status`；若 `logged_in=false` 或无法连接 Chrome，说明浏览器代理未运行，告知用户处理，不要自行修复浏览器。
+- 首次调用失败或确认未配置完成时，提醒用户查看项目 README（https://github.com/Lendle-King/ask-chatgpt#readme），里面有 GUI/无 GUI 两种登录方式和完整排障。

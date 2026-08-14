@@ -40,6 +40,12 @@ CHATGPT_HOME = "https://chatgpt.com/"
 DEFAULT_MODEL = "GPT-5.6 Sol"
 DEFAULT_EFFORT = "high"
 EFFORT_OPTIONS = {"instant": "Instant", "medium": "Medium", "high": "High"}
+README_URL = "https://github.com/Lendle-King/ask-chatgpt#readme"
+
+
+def _readme_hint():
+    return (f"If this is the first call or setup is incomplete, follow the "
+            f"README: {README_URL}")
 
 # ---------------------------------------------------------------------------
 # JS helpers injected into the page. Each returns a JSON-serializable value.
@@ -202,7 +208,7 @@ def connect(timeout_ms=8000, attempts=3):
             time.sleep(2)
     pw.stop()
     fail(f"cannot connect to Chrome at {CDP_URL}: {last_err}. "
-         f"Run {START_SCRIPT} first.")
+         f"Run {START_SCRIPT} first. {_readme_hint()}")
 
 
 def get_page(browser):
@@ -223,7 +229,8 @@ def cmd_status():
         r = requests.get(CDP_URL + "/json/version", timeout=3)
         chrome = r.json().get("Browser", "?")
     except Exception as e:
-        fail(f"Chrome not reachable: {e}. Run start_proxy_chrome.sh.")
+        fail(f"Chrome not reachable: {e}. Run start_proxy_chrome.sh. "
+             f"{_readme_hint()}")
     pw, browser = connect()
     try:
         page = get_page(browser)

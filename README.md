@@ -90,21 +90,49 @@ paths** and are location-independent.
 ## Login state
 
 The browser profile lives in `$CHROME_DATA` (default `/tmp/chrome-proxy`).
+`status` reports `logged_in: true` only when the profile holds a live ChatGPT
+session. Two setup paths:
 
-- **First time**: the profile is empty → `status` reports `logged_in: false`.
-  Log in manually via the CDP tab:
-  ```bash
-  # find the page target, then open it in a normal browser:
-  curl -s http://127.0.0.1:9222/json | grep -o 'http://[^"]*devtools[^"]*' | head -1
-  # OR drive it with playwright from Python: connect_over_cdp, page.goto("https://chatgpt.com"),
-  # then let a human complete the login in the same profile.
-  ```
-  Practical approach on a headless server: use `--headless` only **after** the
-  profile is logged in — log in once from a visible Chrome started with the same
-  `--user-data-dir` and `--proxy-server` flags, then switch to headless.
-  Alternatively import cookies via CDP `Network.setCookie` for each session.
+### Path A — Machine with a GUI (desktop Ubuntu / macOS) — easiest
+
+1. Start the bridge browser normally:
+   `python3 ~/.hermes/scripts/chatgpt_web_cli.py ensure-browser`
+2. Open the CDP debug URL in a normal browser and log in **once** with your
+   ChatGPT account:
+   ```bash
+   curl -s http://127.0.0.1:9222/json | grep -o 'http://[^"]*devtools[^"]*' | head -1
+   # paste the resulting URL into your browser → live view of the headless tab →
+   # click "Log in", complete the login there. Cookies persist in the profile.
+   ```
+   (The URL only listens on loopback — safe to open locally.)
+3. Re-check: `python3 ~/.hermes/scripts/chatgpt_web_cli.py status` →
+   `logged_in: true`. Done — no cookie files ever touch the disk.
+
+Alternative for Path A: log in from a **visible** Chrome launched with the same
+`--user-data-dir` and `--proxy-server` flags, quit it, then start headless.
+
+### Path B — Headless server (no GUI)
+
+You cannot click "Log in" on a headless box, so you need cookies that were
+created elsewhere:
+
+- **Export from a browser that can reach chatgpt.com** (your laptop / a GUI
+  machine): log in, then export cookies (Netscape `cookies.txt` format or a
+  JSON array of Chrome `Network.setCookie` payloads).
+- **Import into the bridge profile**: get the CDP websocket of the page
+  (`curl -s http://127.0.0.1:9222/json` → `webSocketDebuggerUrl`), then apply
+  each cookie via `Network.setCookie`, reload chatgpt.com, and run `status`.
+  A tiny script (`~100 lines`) is all it takes; do not paste cookie values into
+  chat, logs, or the repo.
+- **Or copy the whole profile**: log in on a GUI machine with the same
+  `--user-data-dir` value, then rsync the profile dir to the server. Persistent
+  storage survives reboots (`/tmp` does not — see below).
+
+### Profile lifecycle
+
 - **After a machine reboot**: `/tmp/chrome-proxy` is wiped → cookies are gone.
-  Re-import them (copy the profile from persistent storage) or re-login.
+  Re-import (Path B) or re-login (Path A). Point `CHROME_DATA` at a persistent
+  path (e.g. `~/.chrome-proxy-data`) to survive reboots.
 - `logged_in: false` from `status` while the browser is up = profile lost →
   re-import cookies, don't "fix" the browser.
 

@@ -23,6 +23,12 @@ def _script_path(name: str) -> Path:
 # Hermes' default concurrent-tool timeout is 420s; keep tool default below it.
 DEFAULT_TIMEOUT = 360
 VALID_EFFORTS = {"instant", "medium", "high"}
+README_URL = "https://github.com/Lendle-King/ask-chatgpt#readme"
+
+def _readme_hint() -> str:
+    """Guide agents to the setup docs when the bridge is not configured."""
+    return (f"If this is the first call or setup is incomplete, follow the "
+            f"README: {README_URL}")
 
 def _run_cli(argv: list[str], timeout_s: int) -> dict:
     """Run chatgpt_web_cli.py and parse its single JSON stdout line."""
@@ -80,7 +86,7 @@ def _handle_chatgpt_ask(args: dict, **kw) -> str:
             "ChatGPT browser not reachable on CDP :9222. Start it with: "
             f"bash {_script_path('start_proxy_chrome.sh')} (requires an "
             "outbound proxy configured via PROXY_URL in that script, and the "
-            "imported login cookies; see the project README).")
+            "imported login cookies). " + _readme_hint())
 
     search = bool(args.get("search", False))
     model = str(args.get("model") or "GPT-5.6 Sol").strip()
@@ -120,10 +126,13 @@ def _handle_chatgpt_web_status(args: dict, **kw) -> str:
         return tool_result({
             "browser": "down",
             "hint": f"run: bash {_script_path('start_proxy_chrome.sh')}",
+            "docs": README_URL,
         })
     data = _run_cli(["status"], timeout_s=90)
     if not data.get("success"):
-        return tool_error(data.get("error") or "status failed", detail=data)
+        return tool_error(data.get("error") or "status failed",
+                          detail=data,
+                          docs=README_URL)
     return tool_result({"browser": "up", **data})
 
 

@@ -9,6 +9,7 @@ const DEFAULT_EFFORT = "high" as const;
 const DEFAULT_TIMEOUT_SECONDS = 360;
 const MIN_TIMEOUT_SECONDS = 30;
 const MAX_TIMEOUT_SECONDS = 900;
+const README_URL = "https://github.com/Lendle-King/ask-chatgpt#readme";
 
 type JsonObject = Record<string, unknown>;
 
@@ -103,6 +104,11 @@ function stderrTail(stderr: string): string {
 	return trimmed.length > 2000 ? trimmed.slice(-2000) : trimmed;
 }
 
+/** Setup guidance appended to failure messages (first call / incomplete setup). */
+function readmeHint(): string {
+	return `\nIf this is the first call or setup is incomplete, follow the README: ${README_URL}`;
+}
+
 function getHermesCliPath(): string {
 	const hermesHome = process.env.HERMES_HOME || join(homedir(), ".hermes");
 	return join(hermesHome, "scripts", "chatgpt_web_cli.py");
@@ -175,12 +181,12 @@ export default function chatgptWebExtension(pi: ExtensionAPI) {
 					const partial = payload && typeof payload.partial === "string" && payload.partial.trim()
 						? ` Partial answer: ${redactSensitive(payload.partial.slice(0, 300))}`
 						: "";
-					const error = `chatgpt_ask failed: ${reason}.${cliError}${partial}${result.stderr.trim() ? ` Stderr tail: ${stderrTail(result.stderr)}` : ""}`;
+					const error = `chatgpt_ask failed: ${reason}.${cliError}${partial}${result.stderr.trim() ? ` Stderr tail: ${stderrTail(result.stderr)}` : ""}${readmeHint()}`;
 					return toolResult(error, { success: false, code: result.code, killed: result.killed, ...(payload ?? {}) });
 				}
 				if (!payload) {
 					return toolResult(
-						`chatgpt_ask failed: the CLI did not return a JSON object.${result.stderr.trim() ? ` Stderr tail: ${stderrTail(result.stderr)}` : ""}`,
+						`chatgpt_ask failed: the CLI did not return a JSON object.${result.stderr.trim() ? ` Stderr tail: ${stderrTail(result.stderr)}` : ""}${readmeHint()}`,
 						{ success: false, code: result.code },
 					);
 				}
@@ -195,7 +201,7 @@ export default function chatgptWebExtension(pi: ExtensionAPI) {
 						elapsed_s: payload.elapsed_s,
 					};
 					return toolResult(
-						`chatgpt_ask failed: ${redactSensitive(message)}${result.stderr.trim() ? ` Stderr tail: ${stderrTail(result.stderr)}` : ""}`,
+						`chatgpt_ask failed: ${redactSensitive(message)}${result.stderr.trim() ? ` Stderr tail: ${stderrTail(result.stderr)}` : ""}${readmeHint()}`,
 						failureDetails,
 					);
 				}
@@ -212,7 +218,7 @@ export default function chatgptWebExtension(pi: ExtensionAPI) {
 				return toolResult(JSON.stringify(response), response);
 			} catch (error) {
 				const message = error instanceof Error ? error.message : String(error);
-				return toolResult(`chatgpt_ask failed: ${redactSensitive(message)}`, { success: false });
+				return toolResult(`chatgpt_ask failed: ${redactSensitive(message)}${readmeHint()}`, { success: false });
 			}
 		},
 	});
