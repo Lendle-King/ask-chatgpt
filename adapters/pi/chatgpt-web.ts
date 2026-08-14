@@ -122,7 +122,7 @@ function toolResult(text: string, details: JsonObject = {}) {
 }
 
 const CHATGPT_ASK_PARAMETERS = Type.Object({
-	question: Type.String({ description: "The question to ask through the logged-in ChatGPT web proxy." }),
+	question: Type.String({ description: "The question to ask through the logged-in ChatGPT web session." }),
 	search: Type.Optional(Type.Boolean({ description: "Enable ChatGPT Web search for current information.", default: false })),
 	model: Type.Optional(Type.String({ description: `ChatGPT model, default: ${DEFAULT_MODEL}.` })),
 	effort: Type.Optional(
@@ -145,10 +145,10 @@ export default function chatgptWebExtension(pi: ExtensionAPI) {
 		name: "chatgpt_ask",
 		label: "ChatGPT Web Ask",
 		description:
-			"Ask an already logged-in ChatGPT web proxy through Hermes. Set search=true for real-time information from the web. The default GPT-5.6 Sol with high effort is useful for complex reasoning, but this is not the first choice for a simple factual lookup.",
-		promptSnippet: "Ask the logged-in ChatGPT web proxy; use search=true for current web information",
+			"Ask an already logged-in ChatGPT web session through Hermes. Set search=true for real-time information from the web. The default GPT-5.6 Sol with high effort is useful for complex reasoning, but this is not the first choice for a simple factual lookup.",
+		promptSnippet: "Ask the logged-in ChatGPT web session; use search=true for current web information",
 		promptGuidelines: [
-			"Use chatgpt_ask for a second opinion or difficult reasoning via the logged-in ChatGPT web proxy.",
+			"Use chatgpt_ask for a second opinion or difficult reasoning via the logged-in ChatGPT web session.",
 			"Set search=true when the answer depends on current web information; do not imply that an answer without search is real-time.",
 			"Use the default high effort for difficult reasoning, but prefer direct Pi tools for simple, local, mechanical facts or edits.",
 			"Do not put secrets, cookies, API keys, or private credentials in the question.",

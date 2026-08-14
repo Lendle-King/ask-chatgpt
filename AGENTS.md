@@ -18,16 +18,7 @@ chatgpt.com, plus optional agent adapters. End state: `status` returns
 uname -s            # Linux or Darwin
 python3 --version   # need >= 3.9
 command -v screen curl git pip3 2>/dev/null
-echo "PROXY_URL=${PROXY_URL:-<unset>}"
 ```
-
-Ask the user (or check `~/.ssh/config` / systemd units / running processes) for
-**the outbound proxy** if `PROXY_URL` is unset: an SSH tunnel port, Clash
-mixed-port, V2Ray, etc. This is the ONE thing you cannot invent. If no proxy
-exists and the machine can reach chatgpt.com directly, set `PROXY_URL` to
-`http://127.0.0.1:17891` only as a placeholder and rely on direct
-connectivity — but verify in Step 3 that `https://chatgpt.com` is actually
-reachable through the chosen proxy path.
 
 ## Step 1 — Install dependencies
 
@@ -69,22 +60,16 @@ command -v google-chrome chromium chromium-browser 2>/dev/null
 If nothing is found: `pip install playwright && python3 -m playwright install chromium`
 (or `brew install --cask google-chrome` on macOS, or ask the user for `CHROME_BIN`).
 
-## Step 3 — Configure the proxy and start Chrome
+## Step 3 — Start Chrome
 
 ```bash
-# If your proxy is NOT http://127.0.0.1:17891, export the right one:
-export PROXY_URL=http://127.0.0.1:<your-proxy-port>
 python3 ~/.hermes/scripts/chatgpt_web_cli.py ensure-browser
-# Expect: "Chrome up on :9222 via proxy ..."
+# Expect: "Chrome up on :9222 ..."
 ```
 
-Verify the proxy path BEFORE believing Chrome is useful:
-```bash
-curl -s -m 10 -x "${PROXY_URL:-http://127.0.0.1:17891}" https://chatgpt.com -o /dev/null -w "%{http_code}\n"
-```
-- `200/30x/403` → proxy path OK (403 = Cloudflare blocks curl UA; the real browser passes, proceed).
-- `000` / `ERR_PROXY_CONNECTION_FAILED` → proxy is wrong or dead: find the real
-  proxy, do NOT continue. Check `ss -tlnp | grep <port>` for the listener.
+If Chrome fails to reach chatgpt.com, check that the machine has working
+connectivity to the site (the launcher accepts a `PROXY_URL` environment
+variable if a proxy is required on this network).
 
 ## Step 4 — Ensure login state
 
@@ -96,7 +81,7 @@ python3 ~/.hermes/scripts/chatgpt_web_cli.py status
 - `"logged_in": false` → the profile (`/tmp/chrome-proxy`) has no cookies:
   1. Ask the user to log in once (open `http://127.0.0.1:9222` → pick the page
      target → interact, or point a visible Chrome with the same
-     `--user-data-dir` + `--proxy-server` at chatgpt.com and complete the
+     `--user-data-dir` at chatgpt.com and complete the
      login), **or**
   2. Import cookies: from a user-provided `cookies.json` (Netscape format or
      Chrome `Network.setCookie` array), apply them via CDP
@@ -125,7 +110,7 @@ contains today's date.
 
 ## Step 7 — Report
 
-Summarize with concrete evidence: proxy endpoint used, `status` JSON,
+Summarize with concrete evidence: `status` JSON,
 smoke-test answer + `elapsed_s`, and which adapters were installed (with paths).
 If any step failed, report the exact error and what you verified — do not
 fabricate success.

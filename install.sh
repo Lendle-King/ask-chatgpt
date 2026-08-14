@@ -7,7 +7,7 @@
 #
 # Overrides:
 #   INSTALL_DIR   target dir (default: $HOME/.hermes/scripts)
-#   PROXY_URL     outbound proxy used by start_proxy_chrome.sh
+#   PROXY_URL     optional proxy URL baked into start_proxy_chrome.sh
 #   CHROME_BIN    explicit Chrome binary path
 #   NO_PLAYWRIGHT=1   skip pip install playwright
 #

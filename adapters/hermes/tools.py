@@ -84,8 +84,7 @@ def _handle_chatgpt_ask(args: dict, **kw) -> str:
     if not _browser_reachable():
         return tool_error(
             "ChatGPT browser not reachable on CDP :9222. Start it with: "
-            f"bash {_script_path('start_proxy_chrome.sh')} (requires an "
-            "outbound proxy configured via PROXY_URL in that script, and the "
+            f"bash {_script_path('start_proxy_chrome.sh')} (requires the "
             "imported login cookies). " + _readme_hint())
 
     search = bool(args.get("search", False))

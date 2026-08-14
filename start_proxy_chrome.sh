@@ -1,14 +1,10 @@
 #!/bin/bash
-# start_proxy_chrome.sh — Start headless Chrome with a local proxy for the
-# ChatGPT Web Bridge (CDP on :9222).
-#
-# Used when target sites are blocked for direct connection (e.g. chatgpt.com
-# from mainland China): point PROXY_URL at an outbound proxy (SSH tunnel,
-# Clash, V2Ray, ...). Works on Ubuntu and macOS.
+# start_proxy_chrome.sh — Start headless Chrome for the ChatGPT Web Bridge
+# (CDP on :9222). Works on Ubuntu and macOS.
 #
 # Overrides (environment variables):
 #   CHROME_BIN   path to a Chrome/Chromium binary (auto-detected if unset)
-#   PROXY_URL    outbound proxy, e.g. http://127.0.0.1:17891 (default)
+#   PROXY_URL    optional proxy URL passed to Chrome (default http://127.0.0.1:17891)
 #   CDP_PORT     remote debugging port (default 9222)
 #   CHROME_DATA  user-data-dir (default /tmp/chrome-proxy)
 #
@@ -74,7 +70,7 @@ fi
 
 sleep 3
 if curl -s -m 5 "http://127.0.0.1:${PORT}/json/version" >/dev/null 2>&1; then
-  echo "Chrome up on :${PORT} via proxy ${PROXY} (bin: ${CHROME})"
+  echo "Chrome up on :${PORT} (bin: ${CHROME})"
 else
   echo "FAILED to start Chrome" >&2
   exit 1

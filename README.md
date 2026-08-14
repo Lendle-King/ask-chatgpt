@@ -19,7 +19,6 @@ uses your existing ChatGPT Plus/Pro browser session.
 
 - **Model**: GPT-5.6 Sol, effort **High** (max thinking) by default — change with `--model` / `--effort`.
 - **Optional web search** via `--search` (real-time/current info).
-- **Works behind the GFW**: Chrome goes through a local proxy (SSH tunnel, Clash, V2Ray...).
 - **Three adapters included**: Hermes plugin, Pi extension, Kimi Code plugin — all share one driver.
 
 > ⚠️ One shared browser tab: **never run two CLI calls concurrently** — they fight over the page.
@@ -31,7 +30,7 @@ uses your existing ChatGPT Plus/Pro browser session.
 ```
 chatgpt-web-bridge/
 ├── chatgpt_web_cli.py        # Core driver: ask / status / ensure-browser
-├── start_proxy_chrome.sh     # Starts proxied headless Chrome on CDP :9222
+├── start_proxy_chrome.sh     # Starts headless Chrome on CDP :9222
 ├── install.sh                # One-shot installer (Ubuntu / macOS)
 ├── AGENTS.md                 # Step-by-step self-config prompt for ANY coding agent
 └── adapters/
@@ -49,11 +48,6 @@ chatgpt-web-bridge/
 | Python ≥ 3.9 | `apt install python3 python3-pip` | bundled with Xcode CLT |
 | Chrome/Chromium | auto-detected (Playwright cache, google-chrome, chromium) | auto-detected (Playwright cache, /Applications/Google Chrome.app) |
 | `screen` (optional) | `apt install screen` | bundled (`/usr/bin/screen`) |
-| **Outbound proxy** | required if chatgpt.com is blocked from your network | same |
-
-The proxy is the only truly hard requirement: the browser must be able to
-reach chatgpt.com. Typical setups: an SSH tunnel (`ssh -L 17891:127.0.0.1:7890 user@jump-host`),
-Clash/V2Ray/Sing-box local ports, or a corporate proxy.
 
 ---
 
@@ -64,8 +58,6 @@ Clash/V2Ray/Sing-box local ports, or a corporate proxy.
 git clone https://github.com/Lendle-King/ask-chatgpt.git && cd ask-chatgpt
 
 # 2. Install (playwright python pkg + Chrome detection + files into ~/.hermes/)
-#    Point PROXY_URL at YOUR outbound proxy first if 17891 is not yours:
-export PROXY_URL=http://127.0.0.1:17891   # optional; default shown in script
 bash install.sh
 
 # 3. Start the proxied Chrome (CDP :9222)
@@ -109,7 +101,7 @@ session. Two setup paths:
    `logged_in: true`. Done — no cookie files ever touch the disk.
 
 Alternative for Path A: log in from a **visible** Chrome launched with the same
-`--user-data-dir` and `--proxy-server` flags, quit it, then start headless.
+`--user-data-dir` flag, quit it, then start headless.
 
 ### Path B — Headless server (no GUI)
 
@@ -215,8 +207,6 @@ python3 chatgpt_web_cli.py ask '今天的日期？请搜索后回答' --search -
 | Symptom | Cause / fix |
 |---|---|
 | `ModuleNotFoundError: No module named 'playwright'` | install it in the interpreter that runs the CLI (`pip install playwright`) |
-| `net::ERR_PROXY_CONNECTION_FAILED` | proxy port mismatch — check `start_proxy_chrome.sh` `PROXY_URL` vs your actual proxy port |
-| `net::ERR_CONNECTION_CLOSED` / `HTTP 403` | proxy is reachable but upstream is dead (check `curl -x $PROXY https://www.google.com`), or Cloudflare blocked a plain curl UA (use the browser, not curl) |
 | `logged_in: false` | profile cookies missing (first run or reboot wiped `/tmp/chrome-proxy`) — log in / re-import cookies |
 | Answer stuck with stop-button visible | SSE tail stall — the CLI auto-clicks stop and returns `stalled: true`; do not "fix" by raising timeouts |
 | `"Thinking"` returned as the answer | extraction grabbed the thinking indicator — should not happen (`.markdown` preferred); report as a bug |

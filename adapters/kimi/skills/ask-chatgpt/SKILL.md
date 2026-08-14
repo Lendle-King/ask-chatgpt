@@ -36,7 +36,7 @@ stdout 输出一行 JSON（stderr 是过程日志，无需解析）：
 python3 "$HOME/.hermes/scripts/chatgpt_web_cli.py" status
 ```
 
-返回 `logged_in`、`composer` 等状态。`logged_in=false` 或连接失败 = 浏览器代理未运行，告知用户，不要自行修复浏览器。
+返回 `logged_in`、`composer` 等状态。`logged_in=false` 或连接失败 = 浏览器服务未运行，告知用户，不要自行修复浏览器。
 
 ## 规则与陷阱
 

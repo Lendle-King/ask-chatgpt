@@ -2,7 +2,7 @@
 """chatgpt_web_cli.py — Ask questions to the ChatGPT web UI (chatgpt.com) via CDP.
 
 Drives the logged-in Chrome instance started by start_proxy_chrome.sh
-(CDP on :9222, local proxy, anti-detect flags). Works standalone (Hermes,
+(CDP on :9222, anti-detect flags). Works standalone (Hermes,
 Pi, or any shell) — outputs a single JSON object on stdout.
 
 Usage:
@@ -389,7 +389,7 @@ def cmd_ask(args):
                 started = True
                 stable_since = now
                 # Stream stall: stop-button persists but the answer text has
-                # not changed for --stall-timeout seconds (proxy/SSE stall).
+                # not changed for --stall-timeout seconds (SSE tail stall).
                 # Click stop and keep the generated text instead of hanging
                 # until the overall timeout.
                 if last_text and now - text_changed_at >= args.stall_timeout:
